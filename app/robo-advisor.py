@@ -32,6 +32,10 @@ def to_usd(my_price):
 def hasNumbers(inputString):
     return any(char.isdigit() for char in inputString)
 
+#Wrapper function for strip so I can use map()
+def stripString(inputString):
+    return inputString.strip()
+
 #Setup
 from dotenv import load_dotenv
 import requests
@@ -47,13 +51,13 @@ API_KEY=os.environ.get("ALPHAVANTAGE_API_KEY")
 user_symbols = ""
 failure = False
 
-#Ask user to submit choice
+#Ask user to submit choice, conver to upper case
 user_symbols = input("Please enter a ticker symbol, or a series of ticker symbols seperated by a comma, to retrieve data: ").upper()
 
-#Split up symbols, and perform checks
-user_symbols = user_symbols.split(",")
+#Split up symbols and remove trailing white space
+user_symbols = list(map(stripString, user_symbols.split(',')))
+#Perfom error checking on each submission
 for symbol in user_symbols:
-    symbol = symbol.strip()
     #Check that ticker is less than 5 characters
     if(len(symbol) > 4):
         print("[ERROR]: Symbol '"+str(symbol)+"' has too many characters. Please try again.")
@@ -63,3 +67,4 @@ for symbol in user_symbols:
         print("[ERROR]: Symbol '"+str(symbol)+"' contains numbers. Please try again.")
         failure = True
 
+print(user_symbols)
