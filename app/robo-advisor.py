@@ -4,6 +4,8 @@ import requests
 import csv
 import os
 import datetime
+from tabulate import tabulate #Library that creates tables from arrays
+import json
 
 #Get API key
 load_dotenv()
@@ -12,6 +14,7 @@ API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY")
 #Init variables
 user_symbols = ""
 failure = False
+results = {}
 
 
 #to_usd function for output
@@ -35,7 +38,6 @@ def hasNumbers(inputString):
 def stripString(inputString):
     return inputString.strip()
 
-
 #Ask user to submit choice, conver to upper case
 user_symbols = input(
     "Please enter a ticker symbol, or a series of ticker symbols seperated by a comma, to retrieve data: "
@@ -56,20 +58,37 @@ for symbol in user_symbols:
               "' contains numbers. Please try again.")
         failure = True
 
+#If there are errors in the first wave, make requests for information
+
 if (not failure):
+    #Begin output
     print("-------------------------")
-    print("SELECTED SYMBOL: XYZ")
+    print("SELECTED SYMBOLS: ", ", ".join(user_symbols))
     print("-------------------------")
     print("REQUESTING STOCK MARKET DATA...")
-    print("REQUEST AT: 2018-02-20 02:00pm")
+    print("REQUEST AT: ", datetime.datetime.now().strftime("%D %I:%M%p"))
     print("-------------------------")
-    print("LATEST DAY: 2018-02-20")
-    print("LATEST CLOSE: $100,000.00")
-    print("RECENT HIGH: $101,000.00")
-    print("RECENT LOW: $99,000.00")
-    print("-------------------------")
-    print("RECOMMENDATION: BUY!")
-    print("RECOMMENDATION REASON: TODO")
-    print("-------------------------")
-    print("HAPPY INVESTING!")
-    print("-------------------------")
+
+    #Making requests
+    for ticker in user_symbols:
+        #creating the payload to send with the request
+        payload = {'function': 'TIME_SERIES_DAILY', 'symbol': ticker, 'datatype': 'json', 'apikey': API_KEY}
+        
+        request_result = requests.get("https://www.alphavantage.co/query", params=payload).json()
+        
+        if(request_result["Error Message"]):
+            print("[ERROR]: An error with the request occured. Skipping ticker " + ticker + " | " + request_result["Error Message"])
+            break
+
+        results[ticker] = request_result #adding request info to an array
+
+
+        csvFile = open("./data/" + ticker + "_data.csv", 'w') #open up csv to write to
+        writer = csv.writer(csvFile) #create csv writer
+        writer.writerow(["time", "open", "high", "low", "close", "volume"]) #insert header row
+        
+        for time in request_result["Time Series (Daily)"]: #add all the info
+            writer.writerow([time] + list(request_result["Time Series (Daily)"][time].values()))
+
+else:
+    print("Please try again")
