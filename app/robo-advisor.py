@@ -4,7 +4,7 @@ import requests
 import csv
 import os
 import datetime
-from tabulate import tabulate #Library that creates tables from arrays
+from tabulate import tabulate  #Library that creates tables from arrays
 import json
 
 #Get API key
@@ -37,6 +37,7 @@ def hasNumbers(inputString):
 #Wrapper function for strip so I can use map()
 def stripString(inputString):
     return inputString.strip()
+
 
 #Ask user to submit choice, conver to upper case
 user_symbols = input(
@@ -72,23 +73,38 @@ if (not failure):
     #Making requests
     for ticker in user_symbols:
         #creating the payload to send with the request
-        payload = {'function': 'TIME_SERIES_DAILY', 'symbol': ticker, 'datatype': 'json', 'apikey': API_KEY}
-        
-        request_result = requests.get("https://www.alphavantage.co/query", params=payload).json()
-        
-        if(request_result["Error Message"]):
-            print("[ERROR]: An error with the request occured. Skipping ticker " + ticker + " | " + request_result["Error Message"])
-            break
+        payload = {
+            'function': 'TIME_SERIES_DAILY',
+            'symbol': ticker,
+            'datatype': 'json',
+            'apikey': API_KEY
+        }
 
-        results[ticker] = request_result #adding request info to an array
+        try:
+            request_result = requests.get("https://www.alphavantage.co/query",
+                                          params=payload).json()
 
+            if ("Error Message" in request_result):
+                raise Exception(request_result["Error Message"])
 
-        csvFile = open("./data/" + ticker + "_data.csv", 'w') #open up csv to write to
-        writer = csv.writer(csvFile) #create csv writer
-        writer.writerow(["time", "open", "high", "low", "close", "volume"]) #insert header row
-        
-        for time in request_result["Time Series (Daily)"]: #add all the info
-            writer.writerow([time] + list(request_result["Time Series (Daily)"][time].values()))
+            results[ticker] = request_result  #adding request info to an array
+
+            csvFile = open("./data/" + ticker + "_data.csv",
+                           'w')  #open up csv to write to
+            writer = csv.writer(csvFile)  #create csv writer
+            writer.writerow(["time", "open", "high", "low", "close",
+                             "volume"])  #insert header row
+
+            for time in request_result[
+                    "Time Series (Daily)"]:  #add all the info
+                writer.writerow(
+                    [time] +
+                    list(request_result["Time Series (Daily)"][time].values()))
+            print("[SUCCESS] " + ticker + " data file has been created")
+        except:
+            print(
+                "[ERROR]: An error with the request occured. Skipping ticker "
+                + ticker + " | " + request_result["Error Message"])
 
 else:
     print("Please try again")
