@@ -95,16 +95,72 @@ if (not failure):
             writer.writerow(["time", "open", "high", "low", "close",
                              "volume"])  #insert header row
 
+            #Init variables for ouptut statistics for the ticker
+            latest_day = ""
+            last_refreshed = request_result["Meta Data"]["3. Last Refreshed"]
+            latest_close = 0.00
+            recent_high = 0.00
+            recent_low = 0.00
+
+            firstTick = 0  #using this to capture only the first result
+
             for time in request_result[
                     "Time Series (Daily)"]:  #add all the info
-                writer.writerow(
-                    [time] +
-                    list(request_result["Time Series (Daily)"][time].values()))
+                time_series_values = list(
+                    request_result["Time Series (Daily)"][time].values())
+
+                if (firstTick == 0):
+                    date_values = time.split("-")
+                    latest_day = datetime.date(year=int(date_values[0]),
+                                               month=int(date_values[1]),
+                                               day=int(date_values[2]))
+                    latest_close = float(time_series_values[3])
+                    recent_low = float(time_series_values[2])
+                    firstTick = firstTick + 1
+
+                writer.writerow([time] + time_series_values)
+
+                if (recent_high < float(time_series_values[1])):
+                    recent_high = float(time_series_values[1])
+
+                if (recent_low > float(time_series_values[2])):
+                    recent_low = float(time_series_values[2])
+
+            results[ticker]["Summary Data"] = {
+                "last_refreshed": last_refreshed,
+                "latest_day": latest_day,
+                "latest_close": to_usd(latest_close),
+                "recent_high": to_usd(recent_high),
+                "recent_low": to_usd(recent_low),
+                "ticker": ticker
+            }
+
             print("[SUCCESS] " + ticker + " data file has been created")
+
         except:
             print(
                 "[ERROR]: An error with the request occured. Skipping ticker "
                 + ticker + " | " + request_result["Error Message"])
 
-else:
-    print("Please try again")
+    tickers = results.keys()
+    tableData = {
+        "ticker": [],
+        "last_refreshed": [],
+        "latest_day": [],
+        "latest_close": [],
+        "recent_high": [],
+        "recent_low": []
+    }
+
+    for symbol in tickers:
+        for key in tableData.keys():
+            tableData[key].append(results[symbol]["Summary Data"][key])
+
+    print(
+        " \n \n",
+        tabulate(tableData,
+                 headers=[
+                     "Ticker", "Last Refreshed", "Latest Day", "Latest Close",
+                     "Recent High", "Recent Low"
+                 ],
+                 tablefmt="grid"))
