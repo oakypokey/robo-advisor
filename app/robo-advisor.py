@@ -38,6 +38,12 @@ def hasNumbers(inputString):
 def stripString(inputString):
     return inputString.strip()
 
+def recommendationEngine(averagePrice, latestClose):
+    #if latestClose is above average, sell
+    if(latestClose > averagePrice):
+        return ["SELL", "Latest closing price was above the average."]
+    else:
+        return ["BUY", "Latest closing price was below the average."]
 
 #Ask user to submit choice, conver to upper case
 user_symbols = input(
@@ -101,6 +107,10 @@ if (not failure):
             latest_close = 0.00
             recent_high = 0.00
             recent_low = 0.00
+            recommendation = ""
+            reason = ""
+            averagePrice = 0.00
+            sumPrice = 0.00
 
             firstTick = 0  #using this to capture only the first result
 
@@ -125,14 +135,26 @@ if (not failure):
 
                 if (recent_low > float(time_series_values[2])):
                     recent_low = float(time_series_values[2])
+                
+                #summing all of the closing prices together for the average later on
+                sumPrice = sumPrice + float(time_series_values[3])
 
+            #sum of all prices divided by the number of points to get average over the period
+            averagePrice = sumPrice / len(request_result["Time Series (Daily)"])
+
+            [recommendation, reason] = recommendationEngine(averagePrice, latest_close)
+
+            #Output the data
             results[ticker]["Summary Data"] = {
                 "last_refreshed": last_refreshed,
                 "latest_day": latest_day,
                 "latest_close": to_usd(latest_close),
                 "recent_high": to_usd(recent_high),
                 "recent_low": to_usd(recent_low),
-                "ticker": ticker
+                "ticker": ticker,
+                "recommendation": recommendation,
+                "reason": reason,
+                "averagePrice": to_usd(averagePrice)
             }
 
             print("[SUCCESS] " + ticker + " data file has been created")
@@ -140,9 +162,10 @@ if (not failure):
         except:
             print(
                 "[ERROR]: An error with the request occured. Skipping ticker "
-                + ticker + " | " + request_result["Error Message"])
+                + ticker + " | Response:  " + request_result["Error Message"])
 
     tickers = results.keys()
+
     tableData = {
         "ticker": [],
         "last_refreshed": [],
@@ -152,9 +175,19 @@ if (not failure):
         "recent_low": []
     }
 
+    recommendationData = {
+        "ticker": [],
+        "recommendation": [],
+        "reason": [],
+        "averagePrice": []
+    }
+
     for symbol in tickers:
         for key in tableData.keys():
             tableData[key].append(results[symbol]["Summary Data"][key])
+        
+        for key in recommendationData.keys():
+            recommendationData[key].append(results[symbol]["Summary Data"][key])
 
     print(
         " \n \n",
@@ -164,3 +197,13 @@ if (not failure):
                      "Recent High", "Recent Low"
                  ],
                  tablefmt="grid"))
+    
+    print(
+        " \n \n",
+        tabulate(recommendationData,
+                 headers=[
+                     "Ticker", "Recommendation", "Reason", "Average Price"
+                 ],
+                 tablefmt="grid"))
+
+    print("End of trading recommendations report. Good bye!")
