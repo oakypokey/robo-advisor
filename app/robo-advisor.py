@@ -45,6 +45,9 @@ def recommendationEngine(averagePrice, latestClose):
     else:
         return ["BUY", "Latest closing price was below the average."]
 
+def hasSpecial(inputString):
+    return not inputString.isalnum()
+    
 #Ask user to submit choice, conver to upper case
 user_symbols = input(
     "Please enter a ticker symbol, or a series of ticker symbols seperated by a comma, to retrieve data: "
@@ -63,6 +66,11 @@ for symbol in user_symbols:
     if (hasNumbers(symbol)):
         print("[ERROR]: Symbol '" + str(symbol) +
               "' contains numbers. Please try again.")
+        failure = True
+    #Check that the ticker contains special characters
+    if(hasSpecial(symbol)):
+        print("[ERROR]: Symbol '" + str(symbol) +
+              "' contains a special character. Please try again.")
         failure = True
 
 #If there are errors in the first wave, make requests for information
