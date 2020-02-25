@@ -103,7 +103,8 @@ if (not failure):
 
             results[ticker] = request_result  #adding request info to an array
 
-            csvFile = open("./data/" + ticker + "_data.csv",
+            path = os.path.join(os.path.dirname(__file__),"..", "data", ticker + "_data.csv")
+            csvFile = open(path,
                            'w')  #open up csv to write to
             writer = csv.writer(csvFile)  #create csv writer
             writer.writerow(["time", "open", "high", "low", "close",
