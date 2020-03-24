@@ -3,3 +3,4 @@
 # ignore secret environment variable values in the ".env" file:
 .env
 .vscode
+__pycache__
