@@ -1,4 +1,5 @@
-# Robo-Advisor
+[![Build Status](https://travis-ci.com/oakypokey/robo-advisor.svg?branch=master)](https://travis-ci.com/oakypokey/robo-advisor)
+# Robo-Advisor 
 
 This software allows users to interact with stock price information made available by Alphavantage through the command line.
 
