@@ -48,6 +48,9 @@ def recommendationEngine(averagePrice, latestClose):
 def hasSpecial(inputString):
     return not inputString.isalnum()
 
+def get_response(url):
+   return requests.get(url).json()
+
 if __name__ == "__main__":   
     #Ask user to submit choice, conver to upper case
     user_symbols = input(
@@ -96,8 +99,7 @@ if __name__ == "__main__":
             }
 
             try:
-                request_result = requests.get("https://www.alphavantage.co/query",
-                                            params=payload).json()
+                request_result = get_response("https://www.alphavantage.co/query")
 
                 if ("Error Message" in request_result):
                     raise Exception(request_result["Error Message"])
