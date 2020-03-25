@@ -6,6 +6,7 @@ import os
 import datetime
 from tabulate import tabulate  #Library that creates tables from arrays
 import json
+from urllib.parse import urlencode
 
 #Get API key
 load_dotenv()
@@ -28,6 +29,8 @@ def to_usd(my_price):
     """
     return f"${my_price:,.2f}"  #> $12,000.71
 
+def compile_url(params):
+    return "https://www.alphavantage.co/query?" + urlencode(params)
 
 #checks if a string has ANY numbers in it
 def hasNumbers(inputString):
@@ -96,8 +99,9 @@ if __name__ == "__main__":
             }
 
             try:
-                request_result = requests.get("https://www.alphavantage.co/query",
-                                            params=payload).json()
+                request_result = requests.get(compile_url(payload)).json()
+
+                requests.get
 
                 if ("Error Message" in request_result):
                     raise Exception(request_result["Error Message"])
