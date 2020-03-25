@@ -57,6 +57,9 @@ def recommendationEngine(averagePrice, latestClose):
 def hasSpecial(inputString):
     return not inputString.isalnum()
 
+def get_response(url):
+   return requests.get(url).json()
+
 if __name__ == "__main__":   
     #Ask user to submit choice, conver to upper case
     user_symbols = input(
@@ -98,9 +101,9 @@ if __name__ == "__main__":
         for ticker in user_symbols:
 
             try:
-                request_result = requests.get(compile_url(ticker)).json()
 
-                requests.get
+                request_result = get_response(compile_url(ticker))
+
 
                 if ("Error Message" in request_result):
                     raise Exception(request_result["Error Message"])
