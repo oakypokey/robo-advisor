@@ -6,6 +6,7 @@ import os
 import datetime
 from tabulate import tabulate  #Library that creates tables from arrays
 import json
+from urllib.parse import urlencode
 
 #Get API key
 load_dotenv()
@@ -28,6 +29,14 @@ def to_usd(my_price):
     """
     return f"${my_price:,.2f}"  #> $12,000.71
 
+def compile_url(ticker):
+    payload = {
+        'function': 'TIME_SERIES_DAILY',
+        'symbol': ticker,
+        'datatype': 'json',
+        'apikey': API_KEY
+        }
+    return "https://www.alphavantage.co/query?" + urlencode(payload)
 
 #checks if a string has ANY numbers in it
 def hasNumbers(inputString):
@@ -90,16 +99,11 @@ if __name__ == "__main__":
 
         #Making requests
         for ticker in user_symbols:
-            #creating the payload to send with the request
-            payload = {
-                'function': 'TIME_SERIES_DAILY',
-                'symbol': ticker,
-                'datatype': 'json',
-                'apikey': API_KEY
-            }
 
             try:
-                request_result = get_response("https://www.alphavantage.co/query")
+
+                request_result = get_response(compile_url(ticker))
+
 
                 if ("Error Message" in request_result):
                     raise Exception(request_result["Error Message"])
