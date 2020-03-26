@@ -27,6 +27,7 @@ class StockData:
     recommendation: str
     reason: str
     average_price: float
+    ticker: str
     
     def __init__(self, data):
         self.data = data
@@ -49,6 +50,7 @@ class StockData:
             raise Exception(data["Error Message"])
 
         self.last_refreshed = data["Meta Data"]["3. Last Refreshed"]
+        self.ticker = data["Meta Data"]["2. Symbol"]
         for time in data[
             "Time Series (Daily)"]:  #add all the info
             time_series_values = list(
@@ -106,7 +108,7 @@ class StockData:
             return ["BUY", "Latest closing price was below the average."]
     
     def output_file(self):
-        path = os.path.join(os.path.dirname(__file__),"..", "data", ticker + "_data.csv")
+        path = os.path.join(os.path.dirname(__file__),"..", "data", self.ticker + "_data.csv")
         csvFile = open(path,'w')  #open up csv to write to
         writer = csv.writer(csvFile)  #create csv writer
         writer.writerow(["time", "open", "high", "low", "close","volume"])  #insert header row

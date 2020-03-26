@@ -7,7 +7,7 @@ import pytest
 test_response = {
     "Meta Data": {
         "1. Information": "Daily Prices (open, high, low, close) and Volumes",
-        "2. Symbol": "MSFT",
+        "2. Symbol": "TEST",
         "3. Last Refreshed": "2018-06-08",
         "4. Output Size": "Full size",
         "5. Time Zone": "US/Eastern"
