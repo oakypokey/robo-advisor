@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/oakypokey/robo-advisor.svg?branch=master)](https://travis-ci.com/oakypokey/robo-advisor)[![Maintainability](https://api.codeclimate.com/v1/badges/07178f5faea1688be623/maintainability)](https://codeclimate.com/github/oakypokey/robo-advisor/maintainability)[![Test Coverage](https://api.codeclimate.com/v1/badges/07178f5faea1688be623/test_coverage)](https://codeclimate.com/github/oakypokey/robo-advisor/test_coverage)
+[![Build Status](https://travis-ci.com/oakypokey/robo-advisor.svg?branch=master)](https://travis-ci.com/oakypokey/robo-advisor) [![Maintainability](https://api.codeclimate.com/v1/badges/07178f5faea1688be623/maintainability)](https://codeclimate.com/github/oakypokey/robo-advisor/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/07178f5faea1688be623/test_coverage)](https://codeclimate.com/github/oakypokey/robo-advisor/test_coverage)
 # Robo-Advisor 
 
 This software allows users to interact with stock price information made available by Alphavantage through the command line.
