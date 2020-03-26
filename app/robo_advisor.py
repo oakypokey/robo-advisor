@@ -18,6 +18,16 @@ failure = False
 results = {}
 
 class StockData:
+    data: None
+    latest_day: datetime.date
+    last_refreshed: str
+    latest_close: float
+    recent_high: float
+    recent_low: float
+    recommendation: str
+    reason: str
+    average_price: float
+    
     def __init__(self, data):
         self.data = data
         self.latest_day = ""
